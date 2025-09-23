@@ -57,10 +57,10 @@ erDiagram
     "auth.users" ||--|{ "public.user_roles" : "Tiene roles"
     "public.roles" ||--|{ "public.user_roles" : "Es asignado a"
 
-    "public.user_roles" .. "public.v_user_roles" : "Deriva en (Vista)"
-    "public.v_user_roles" .. "public.v_is_admin" : "Simplifica a (Vista)"
-    "public.v_user_roles" .. "public.v_is_tecnico" : "Simplifica a (Vista)"
-    "public.v_user_roles" .. "public.v_is_cliente" : "Simplifica a (Vista)"
+    "public.user_roles" .. "public.v_user_roles"
+    "public.v_user_roles" .. "public.v_is_admin"
+    "public.v_user_roles" .. "public.v_is_tecnico"
+    "public.v_user_roles" .. "public.v_is_cliente"
 
 ```
 
