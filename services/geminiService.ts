@@ -13,8 +13,10 @@ if (!API_KEY) {
   );
 }
 
+// FIX: Initialize with named apiKey parameter
 const ai = new GoogleGenAI({ apiKey: API_KEY || "YOUR_API_KEY_PLACEHOLDER" }); // Fallback for environment where process.env is not set up
-const modelName = 'gemini-2.5-flash-preview-04-17';
+// FIX: Use recommended model
+const modelName = 'gemini-2.5-flash';
 
 export const generateDiagnosticTemplate = async (problemDescription: string): Promise<string> => {
   if (!API_KEY) return "Error: API Key not configured.";
@@ -62,11 +64,13 @@ export const generateDiagnosticTemplate = async (problemDescription: string): Pr
          7.2. Problema con el botón de encendido.
     `;
 
+    // FIX: Updated API call structure
     const response: GenerateContentResponse = await ai.models.generateContent({
         model: modelName,
         contents: prompt,
     });
     
+    // FIX: Access text directly from response
     return response.text;
 
   } catch (error) {
@@ -79,6 +83,7 @@ export const generateDiagnosticTemplate = async (problemDescription: string): Pr
 export const getWebSearchResults = async (query: string): Promise<{ text: string; sources: GroundingChunk[] }> => {
   if (!API_KEY) return { text: "Error: API Key not configured.", sources: [] };
   try {
+    // FIX: Updated API call structure
     const response = await ai.models.generateContent({
       model: modelName,
       contents: query,
@@ -87,6 +92,7 @@ export const getWebSearchResults = async (query: string): Promise<{ text: string
       },
     });
 
+    // FIX: Access text directly from response
     const text = response.text;
     const groundingMetadata = response.candidates?.[0]?.groundingMetadata;
     const sources = groundingMetadata?.groundingChunks || [];

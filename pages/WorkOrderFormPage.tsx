@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom'; // Changed useHistory to useNavigate
 import { WorkOrder, Client, ClientEquipment, ScheduledService } from '../types';
@@ -17,6 +16,10 @@ interface WorkOrderFormPageState {
   scheduledServiceDetails?: ScheduledService; // Full service object
 }
 
+// Define props for WorkOrderForm to be accessible by Parameters<T>
+type WorkOrderFormProps = React.ComponentProps<typeof WorkOrderForm>;
+
+
 const WorkOrderFormPage: React.FC = () => {
   const { workOrderId } = useParams<{ workOrderId?: string }>();
   const navigate = useNavigate(); 
@@ -24,7 +27,7 @@ const WorkOrderFormPage: React.FC = () => {
   const routeState = location.state as WorkOrderFormPageState | undefined; 
 
   const [formInitialData, setFormInitialData] = useState<WorkOrder | null>(null);
-  const [formPrefillData, setFormPrefillData] = useState<Parameters<typeof WorkOrderForm>[0]['prefillData'] | null>(null);
+  const [formPrefillData, setFormPrefillData] = useState<WorkOrderFormProps['prefillData'] | null>(null);
   
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

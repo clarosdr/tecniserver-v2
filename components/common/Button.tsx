@@ -1,22 +1,21 @@
-
 import React, { ElementType, ComponentPropsWithoutRef } from 'react';
 
 // Define the props specific to our Button component
-interface ButtonOwnProps<E extends ElementType = ElementType> {
-  children: React.ReactNode;
+interface ButtonOwnProps {
+  children?: React.ReactNode;
   variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'warning' | 'ghost' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
-  as?: E; // The 'as' prop allows rendering as a different component/element
   className?: string;
 }
 
 // Combine ButtonOwnProps with the props of the element it will render as (E)
-// Omit any props from the target element that are already defined in ButtonOwnProps
-export type ButtonProps<E extends ElementType> = ButtonOwnProps<E> &
-  Omit<ComponentPropsWithoutRef<E>, keyof ButtonOwnProps<E>>;
+export type ButtonProps<E extends ElementType> = ButtonOwnProps & {
+  as?: E;
+} & Omit<ComponentPropsWithoutRef<E>, keyof ButtonOwnProps | 'as'>;
+
 
 // Default the element type to 'button' if 'as' is not provided
 const Button = <E extends ElementType = 'button'>({
@@ -26,12 +25,13 @@ const Button = <E extends ElementType = 'button'>({
   isLoading = false,
   leftIcon,
   rightIcon,
-  as, // Destructure the 'as' prop
+  // FIX: The default value 'button' (string) is not assignable to the generic type E,
+  // which could be a component. Casting the default value resolves this conflict
+  // for the common use case where the default element is a button.
+  as: Component = 'button' as E,
   className,
   ...props // Spread the rest of the props (could include 'to' for Link, 'href' for 'a', etc.)
 }: ButtonProps<E>) => {
-  // Determine the component to render. Fallback to 'button' if 'as' is not provided.
-  const Component = as || 'button';
 
   const baseStyles = 'font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-900 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center';
 
@@ -54,7 +54,6 @@ const Button = <E extends ElementType = 'button'>({
   // If the component is a button, we can directly use the disabled prop.
   // For other components, this might not be applicable or might have a different name.
   // We cast props to any for disabled to avoid TypeScript errors when Component is not 'button'.
-  // A more robust solution might involve checking if 'disabled' is a valid prop for Component.
   const isDisabled = isLoading || (props as any).disabled;
 
 

@@ -185,7 +185,17 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({ initialData, prefillData,
         const { checked } = e.target as HTMLInputElement;
         parsedValue = checked;
     }
-    setFormData(prev => ({ ...prev, [name]: parsedValue }));
+    
+    // New logic here
+    if (name === 'serviceLocationType' && value === 'Taller') {
+        setFormData(prev => ({
+            ...prev,
+            serviceLocationType: 'Taller',
+            appointmentDateTime: undefined
+        }));
+    } else {
+        setFormData(prev => ({ ...prev, [name]: parsedValue }));
+    }
   };
   
   const handleServiceNatureChange = (nature: ServiceNature) => {
@@ -344,6 +354,25 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({ initialData, prefillData,
                 ))}
                 <Button type="button" variant="ghost" size="sm" onClick={() => alert('Añadir otro requerimiento (Placeholder)')}><PlusIcon className="h-4 w-4"/></Button>
               </div>
+              <div className="mt-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Ubicación del Servicio</label>
+                <div className="flex items-center space-x-3">
+                    {(['Taller', 'Domicilio'] as const).map(location => (
+                        <label key={location} className="flex items-center text-sm">
+                            <input 
+                                type="radio" 
+                                name="serviceLocationType" 
+                                value={location} 
+                                checked={formData.serviceLocationType === location} 
+                                onChange={handleChange} 
+                                className="form-radio h-4 w-4 text-primary focus:ring-primary-light" 
+                                disabled={(isEditing && formData.status === WorkOrderStatus.Entregado)}
+                            />
+                            <span className="ml-1.5 text-slate-700 dark:text-slate-300">{location === 'Domicilio' ? 'A Domicilio' : location}</span>
+                        </label>
+                    ))}
+                </div>
+              </div>
             </div>
 
             {/* Servicio o Producto (Budget) Section */}
@@ -454,8 +483,33 @@ const WorkOrderForm: React.FC<WorkOrderFormProps> = ({ initialData, prefillData,
                 </div>
               </div>
             )}
+            
+            {activeTab === 'citas' && (
+                <div className="space-y-3">
+                    <h4 className="font-semibold text-slate-700 dark:text-slate-200">Gestión de Citas</h4>
+                    {formData.serviceLocationType === 'Domicilio' ? (
+                        <div>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">Seleccione la fecha y hora para la visita a domicilio.</p>
+                            <Input 
+                                label="Fecha y Hora de la Cita"
+                                type="datetime-local"
+                                name="appointmentDateTime"
+                                value={formData.appointmentDateTime ? formData.appointmentDateTime.substring(0, 16) : ''} // Format for datetime-local
+                                onChange={handleChange}
+                                disabled={(isEditing && formData.status === WorkOrderStatus.Entregado)}
+                                containerClassName="mb-0"
+                            />
+                        </div>
+                    ) : (
+                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                            No se requieren citas para servicios en taller. Para agendar una visita a domicilio, cambie la "Ubicación del Servicio" en la sección principal del formulario.
+                        </p>
+                    )}
+                </div>
+            )}
+
             {/* Placeholder for other tabs */}
-            {activeTab !== 'equipo' && <p className="text-sm text-slate-500 dark:text-slate-400 py-4">Contenido para la pestaña '{tabConfigs.find(t=>t.key === activeTab)?.label}' (próximamente).</p>}
+            {activeTab !== 'equipo' && activeTab !== 'citas' && <p className="text-sm text-slate-500 dark:text-slate-400 py-4">Contenido para la pestaña '{tabConfigs.find(t=>t.key === activeTab)?.label}' (próximamente).</p>}
           </div>
         </div>
 
