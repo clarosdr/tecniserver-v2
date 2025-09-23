@@ -21,47 +21,46 @@ El siguiente diagrama ilustra las relaciones entre las tablas y vistas principal
 
 ```mermaid
 erDiagram
-    "auth.users" {
-        UUID id PK "Primary key (from Supabase Auth)"
+    AUTH_USERS {
+        UUID id PK "Primary key from Supabase Auth"
         TEXT email
         TEXT phone
     }
-    "public.users" {
-        UUID id PK,FK "FK to auth.users.id"
+    PUBLIC_USERS {
+        UUID id "PK, FK to auth.users.id"
         TEXT full_name
         TEXT email
         TEXT phone
         TEXT role "Default role, check constraint"
     }
-    "public.roles" {
-        TEXT slug PK "e.g., 'admin', 'tecnico'"
+    PUBLIC_ROLES {
+        TEXT slug PK "e.g. admin, tecnico"
     }
-    "public.user_roles" {
-        UUID user_id PK,FK "FK to auth.users.id"
-        TEXT role_slug PK,FK "FK to public.roles.slug"
+    PUBLIC_USER_ROLES {
+        UUID user_id "PK, FK to auth.users.id"
+        TEXT role_slug "PK, FK to public.roles.slug"
     }
-    "public.v_user_roles" {
+    V_USER_ROLES {
         TEXT info "Combina roles por usuario"
     }
-    "public.v_is_admin" {
-        TEXT info "Helper fn_is_admin()"
+    V_IS_ADMIN {
+        TEXT info "Helper fn_is_admin"
     }
-    "public.v_is_tecnico" {
-        TEXT info "Helper fn_has_role(tecnico)"
+    V_IS_TECNICO {
+        TEXT info "Helper fn_has_role tecnico"
     }
-    "public.v_is_cliente" {
-        TEXT info "Helper fn_has_role(cliente)"
+    V_IS_CLIENTE {
+        TEXT info "Helper fn_has_role cliente"
     }
 
-    "auth.users" ||--o{ "public.users" : "Crea perfil via Trigger"
-    "auth.users" ||--|{ "public.user_roles" : "Tiene roles"
-    "public.roles" ||--|{ "public.user_roles" : "Es asignado a"
+    AUTH_USERS ||--o{ PUBLIC_USERS : "Crea perfil via Trigger"
+    AUTH_USERS ||--o{ PUBLIC_USER_ROLES : "Tiene roles"
+    PUBLIC_ROLES ||--o{ PUBLIC_USER_ROLES : "Es asignado a"
 
-    "public.user_roles" .. "public.v_user_roles"
-    "public.v_user_roles" .. "public.v_is_admin"
-    "public.v_user_roles" .. "public.v_is_tecnico"
-    "public.v_user_roles" .. "public.v_is_cliente"
-
+    PUBLIC_USER_ROLES ||--|| V_USER_ROLES : "Vista de"
+    V_USER_ROLES ||--|| V_IS_ADMIN : "Genera"
+    V_USER_ROLES ||--|| V_IS_TECNICO : "Genera"
+    V_USER_ROLES ||--|| V_IS_CLIENTE : "Genera"
 ```
 
 ---
