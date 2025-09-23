@@ -26,7 +26,6 @@ erDiagram
         TEXT email
         TEXT phone
     }
-
     "public.users" {
         UUID id PK,FK "FK to auth.users.id"
         TEXT full_name
@@ -34,32 +33,38 @@ erDiagram
         TEXT phone
         TEXT role "Default role, check constraint"
     }
-
     "public.roles" {
         TEXT slug PK "e.g., 'admin', 'tecnico'"
     }
-
     "public.user_roles" {
         UUID user_id PK,FK "FK to auth.users.id"
         TEXT role_slug PK,FK "FK to public.roles.slug"
+    }
+    "public.v_user_roles" {
+        TEXT "VIEW"
+        TEXT "Combina roles por usuario"
+    }
+    "public.v_is_admin" {
+        TEXT "VIEW"
+        TEXT "Helper fn_is_admin()"
+    }
+    "public.v_is_tecnico" {
+        TEXT "VIEW"
+        TEXT "Helper fn_has_role(tecnico)"
+    }
+    "public.v_is_cliente" {
+        TEXT "VIEW"
+        TEXT "Helper fn_has_role(cliente)"
     }
 
     "auth.users" ||--o{ "public.users" : "Crea perfil via Trigger"
     "auth.users" ||--|{ "public.user_roles" : "Tiene roles"
     "public.roles" ||--|{ "public.user_roles" : "Es asignado a"
 
-    subgraph "Vistas (Views) para RLS"
-        direction LR
-        "public.v_user_roles"
-        "public.v_is_admin"
-        "public.v_is_tecnico"
-        "public.v_is_cliente"
-    end
-
-    "public.user_roles" ..> "public.v_user_roles" : "Deriva en"
-    "public.v_user_roles" ..> "public.v_is_admin" : "Simplifica a"
-    "public.v_user_roles" ..> "public.v_is_tecnico" : "Simplifica a"
-    "public.v_user_roles" ..> "public.v_is_cliente" : "Simplifica a"
+    "public.user_roles" }o--o{ "public.v_user_roles" : "Deriva en (Vista)"
+    "public.v_user_roles" }o--o{ "public.v_is_admin" : "Simplifica a (Vista)"
+    "public.v_user_roles" }o--o{ "public.v_is_tecnico" : "Simplifica a (Vista)"
+    "public.v_user_roles" }o--o{ "public.v_is_cliente" : "Simplifica a (Vista)"
 
 ```
 
