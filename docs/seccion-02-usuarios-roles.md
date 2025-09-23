@@ -56,10 +56,10 @@ erDiagram
         "public.v_is_cliente"
     end
 
-    "public.user_roles" -- "public.v_user_roles" : "Deriva en"
-    "public.v_user_roles" -- "public.v_is_admin" : "Simplifica a"
-    "public.v_user_roles" -- "public.v_is_tecnico" : "Simplifica a"
-    "public.v_user_roles" -- "public.v_is_cliente" : "Simplifica a"
+    "public.user_roles" ..> "public.v_user_roles" : "Deriva en"
+    "public.v_user_roles" ..> "public.v_is_admin" : "Simplifica a"
+    "public.v_user_roles" ..> "public.v_is_tecnico" : "Simplifica a"
+    "public.v_user_roles" ..> "public.v_is_cliente" : "Simplifica a"
 
 ```
 
