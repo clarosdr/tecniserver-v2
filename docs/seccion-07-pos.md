@@ -70,8 +70,8 @@ erDiagram
     "ventas" ||--|{ "venta_items" : "Contiene"
     "ventas" ||--|{ "pagos" : "Recibe"
     "ventas" ||--o{ "notas_credito" : "Puede ser devuelta en"
-    "venta_items" }|..| "movimientos_inventario" : "Dispara SALIDA"
-    "notas_credito" }|..| "movimientos_inventario" : "Dispara DEVOLUCIÓN"
+    "venta_items" ..> "movimientos_inventario" : "Dispara SALIDA"
+    "notas_credito" ..> "movimientos_inventario" : "Dispara DEVOLUCIÓN"
 ```
 
 ---
