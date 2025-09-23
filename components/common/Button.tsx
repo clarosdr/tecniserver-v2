@@ -51,18 +51,21 @@ const Button = <E extends ElementType = 'button'>({
     lg: 'px-6 py-3 text-lg',
   };
 
-  // If the component is a button, we can directly use the disabled prop.
-  // For other components, this might not be applicable or might have a different name.
-  // We cast props to any for disabled to avoid TypeScript errors when Component is not 'button'.
-  const isDisabled = isLoading || (props as any).disabled;
+  // FIX: Resolve TS error by building props dynamically instead of adding `disabled` to a generic component in JSX
+  // We build a final props object to avoid passing the `disabled` attribute directly,
+  // which was causing a type error with generic components that don't support it.
+  const componentProps: any = {
+    ...props,
+    className: `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className || ''}`,
+  };
 
+  // If the component is a button, its disabled state is determined by isLoading or its passed-in disabled prop.
+  if (Component === 'button') {
+    componentProps.disabled = isLoading || (props as any).disabled;
+  }
 
   return (
-    <Component
-      className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className || ''}`}
-      disabled={Component === 'button' ? isDisabled : undefined} // Only apply HTML disabled if it's actually a button
-      {...props} // Pass down all other props
-    >
+    <Component {...componentProps}>
       {isLoading && (
         <SpinnerIcon className="animate-spin h-5 w-5 mr-2" />
       )}
