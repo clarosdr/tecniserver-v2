@@ -41,20 +41,16 @@ erDiagram
         TEXT role_slug PK,FK "FK to public.roles.slug"
     }
     "public.v_user_roles" {
-        TEXT "VIEW"
-        TEXT "Combina roles por usuario"
+        TEXT info "Combina roles por usuario"
     }
     "public.v_is_admin" {
-        TEXT "VIEW"
-        TEXT "Helper fn_is_admin()"
+        TEXT info "Helper fn_is_admin()"
     }
     "public.v_is_tecnico" {
-        TEXT "VIEW"
-        TEXT "Helper fn_has_role(tecnico)"
+        TEXT info "Helper fn_has_role(tecnico)"
     }
     "public.v_is_cliente" {
-        TEXT "VIEW"
-        TEXT "Helper fn_has_role(cliente)"
+        TEXT info "Helper fn_has_role(cliente)"
     }
 
     "auth.users" ||--o{ "public.users" : "Crea perfil via Trigger"
