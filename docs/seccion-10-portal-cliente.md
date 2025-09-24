@@ -17,49 +17,44 @@ La arquitectura de seguridad se basa en dos tablas de unión clave: `cliente_use
 
 ```mermaid
 erDiagram
-    %% --- Entidades Principales del Portal ---
-    "auth.users" {
+    AUTH_USERS {
         UUID id PK
     }
-    "empresas" {
+    EMPRESAS {
         UUID id PK
         TEXT nombre
     }
-    "clientes" {
+    CLIENTES {
         UUID id PK
         TEXT nombre
         UUID empresa_id FK
     }
-    "empresa_users" {
-        UUID user_id PK,FK
-        UUID empresa_id PK,FK
+    EMPRESA_USERS {
+        UUID user_id "PK, FK"
+        UUID empresa_id "PK, FK"
         TEXT rol
     }
-    "cliente_users" {
-        UUID user_id PK,FK
-        UUID cliente_id PK,FK
+    CLIENTE_USERS {
+        UUID user_id "PK, FK"
+        UUID cliente_id "PK, FK"
     }
 
-    %% --- Otras Entidades (definidas para mostrar relaciones) ---
-    "ot" { TEXT info "Órdenes de Trabajo" }
-    "presupuestos" { TEXT info "Presupuestos" }
-    "ventas" { TEXT info "Ventas" }
-    "equipos_cliente" { TEXT info "Equipos del Cliente" }
+    OT { TEXT info "Ordenes de Trabajo" }
+    PRESUPUESTOS { TEXT info "Presupuestos" }
+    VENTAS { TEXT info "Ventas" }
+    EQUIPOS_CLIENTE { TEXT info "Equipos del Cliente" }
 
-    %% --- Relaciones Estructurales ---
-    "auth.users"      ||--|{ "empresa_users" : "Pertenece a"
-    "auth.users"      ||--|{ "cliente_users" : "Es un"
-    "empresas"        ||--|{ "empresa_users" : "Tiene"
-    "clientes"        ||--|{ "cliente_users" : "Es representado por"
-    "empresas"        ||--o{ "clientes" : "Agrupa a"
+    AUTH_USERS      ||--|{ EMPRESA_USERS : "Pertenece a"
+    AUTH_USERS      ||--|{ CLIENTE_USERS : "Es un"
+    EMPRESAS        ||--|{ EMPRESA_USERS : "Tiene"
+    CLIENTES        ||--|{ CLIENTE_USERS : "Es representado por"
+    EMPRESAS        ||--o{ CLIENTES : "Agrupa a"
 
-    %% --- Relaciones Conceptuales de Visibilidad (vía RLS) ---
-    "empresas"        ..o{ "ot" : "Puede ver"
-    "empresas"        ..o{ "presupuestos" : "Puede ver"
-    "empresas"        ..o{ "ventas" : "Puede ver"
-    "clientes"        ..o{ "ot" : "Puede ver"
-    "clientes"        ..o{ "equipos_cliente" : "Puede ver"
-
+    EMPRESAS        ||--o{ OT : "Puede ver"
+    EMPRESAS        ||--o{ PRESUPUESTOS : "Puede ver"
+    EMPRESAS        ||--o{ VENTAS : "Puede ver"
+    CLIENTES        ||--o{ OT : "Puede ver"
+    CLIENTES        ||--o{ EQUIPOS_CLIENTE : "Puede ver"
 ```
 
 ---
