@@ -1,8 +1,3 @@
--- ==========[ Módulo Marketplace: Modelo de Datos ]==========
--- Script: 19_marketplace_modelo.sql
--- Descripción: Tablas y lógica para el catálogo público, pedidos, comisiones y liquidaciones.
----------------------------------------------------------------------------------
-
 BEGIN;
 
 DO $$
@@ -23,9 +18,9 @@ CREATE TABLE IF NOT EXISTS public.mk_products (
   media jsonb,                               -- imágenes/urls
   created_at timestamptz DEFAULT now()
 );
-COMMENT ON TABLE public.mk_products IS 'Catálogo de productos/servicios publicados por las empresas socias en el marketplace.';
-COMMENT ON COLUMN public.mk_products.empresa_id IS 'Empresa socia que publica el producto.';
-COMMENT ON COLUMN public.mk_products.producto_id IS 'Enlace opcional al ítem de inventario interno de la empresa.';
+COMMENT ON TABLE public.mk_products IS 'Catálogo de productos ofrecidos por socios en el Marketplace.';
+COMMENT ON COLUMN public.mk_products.empresa_id IS 'Socio que publica el producto.';
+COMMENT ON COLUMN public.mk_products.producto_id IS 'Enlace opcional al producto en el inventario local del socio.';
 
 CREATE INDEX IF NOT EXISTS idx_mk_prod_empresa ON public.mk_products(empresa_id);
 CREATE INDEX IF NOT EXISTS idx_mk_prod_nombre ON public.mk_products(LOWER(nombre));
@@ -33,7 +28,7 @@ CREATE INDEX IF NOT EXISTS idx_mk_prod_nombre ON public.mk_products(LOWER(nombre
 -- 2) PEDIDOS (ordenado por cliente final, cumplido por empresa socia)
 CREATE TABLE IF NOT EXISTS public.mk_orders (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  numero text UNIQUE,                         -- MK-YYYY-000001
+  numero text UNIQUE,                         -- Formato: MK-YYYY-000001
   cliente_id uuid NULL REFERENCES public.clientes(id) ON DELETE SET NULL,
   empresa_id uuid NOT NULL REFERENCES public.empresas(id) ON DELETE RESTRICT,
   estado text NOT NULL DEFAULT 'creada' CHECK (estado IN ('creada','pagada','en_proceso','enviada','entregada','cancelada','devuelta')),
@@ -44,7 +39,8 @@ CREATE TABLE IF NOT EXISTS public.mk_orders (
   created_by uuid NULL REFERENCES auth.users(id),
   created_at timestamptz DEFAULT now()
 );
-COMMENT ON TABLE public.mk_orders IS 'Pedidos realizados por clientes finales a las empresas socias a través del marketplace.';
+COMMENT ON TABLE public.mk_orders IS 'Pedidos de clientes finales para productos del Marketplace, cumplidos por socios.';
+COMMENT ON COLUMN public.mk_orders.empresa_id IS 'Socio responsable de cumplir y enviar el pedido.';
 
 CREATE INDEX IF NOT EXISTS idx_mko_estado ON public.mk_orders(estado);
 
@@ -89,13 +85,14 @@ END; $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION public.fn_mk_item_after() RETURNS trigger AS $$
 BEGIN 
-  IF TG_OP = 'DELETE' THEN
-    PERFORM public.fn_mk_recalc_totales(OLD.order_id);
-    RETURN OLD;
-  ELSE
+  IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
     PERFORM public.fn_mk_recalc_totales(NEW.order_id);
     RETURN NEW;
+  ELSIF (TG_OP = 'DELETE') THEN
+    PERFORM public.fn_mk_recalc_totales(OLD.order_id);
+    RETURN OLD;
   END IF;
+  RETURN NULL;
 END; $$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS trg_mk_item_after_ins_upd ON public.mk_order_items;
@@ -113,8 +110,7 @@ CREATE TABLE IF NOT EXISTS public.mk_commission_rules (
   activa boolean DEFAULT true,
   created_at timestamptz DEFAULT now()
 );
-COMMENT ON TABLE public.mk_commission_rules IS 'Reglas para calcular la comisión que el marketplace cobra a la empresa socia.';
-COMMENT ON COLUMN public.mk_commission_rules.valor IS 'Porcentaje (ej. 15.5) o valor fijo (ej. 5000).';
+COMMENT ON TABLE public.mk_commission_rules IS 'Reglas para calcular las comisiones por venta para cada socio.';
 
 CREATE TABLE IF NOT EXISTS public.mk_commissions (
   id bigserial PRIMARY KEY,
@@ -125,8 +121,7 @@ CREATE TABLE IF NOT EXISTS public.mk_commissions (
   valor numeric(14,2) NOT NULL,
   created_at timestamptz DEFAULT now()
 );
-COMMENT ON TABLE public.mk_commissions IS 'Registro de la comisión calculada para cada pedido.';
-COMMENT ON COLUMN public.mk_commissions.base IS 'Monto sobre el cual se calcula la comisión (ej. subtotal del pedido).';
+COMMENT ON TABLE public.mk_commissions IS 'Registro de la comisión calculada para cada orden del Marketplace.';
 
 CREATE INDEX IF NOT EXISTS idx_mkc_order ON public.mk_commissions(order_id);
 
@@ -140,8 +135,7 @@ CREATE TABLE IF NOT EXISTS public.mk_payouts (
   estado text NOT NULL DEFAULT 'pendiente' CHECK (estado IN ('pendiente','programado','pagado')),
   created_at timestamptz DEFAULT now()
 );
-COMMENT ON TABLE public.mk_payouts IS 'Liquidaciones periódicas a las empresas socias.';
-COMMENT ON COLUMN public.mk_payouts.neto_a_pagar IS 'Monto final a transferir a la empresa (total_ordenes - total_comisiones).';
+COMMENT ON TABLE public.mk_payouts IS 'Liquidaciones periódicas a socios, consolida ventas y comisiones.';
 
 CREATE TABLE IF NOT EXISTS public.mk_payout_items (
   id bigserial PRIMARY KEY,
@@ -170,7 +164,6 @@ SELECT o.id, o.numero, o.estado, o.total, e.nombre AS empresa, o.created_at
 FROM public.mk_orders o JOIN public.empresas e ON e.id=o.empresa_id
 ORDER BY o.created_at DESC;
 
-END;
-$$;
+END $$;
 
 COMMIT;
