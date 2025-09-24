@@ -8,59 +8,31 @@ El sistema utiliza un enfoque de plantillas simple basado en placeholders. Las p
 
 ### Proceso de Fusión (Merge)
 
-Para generar un documento, necesitas una función que lea el contenido de una plantilla HTML y reemplace todos los placeholders con los valores de un objeto JSON correspondiente.
+Para generar un documento, se utiliza la función `mergeTemplate` del archivo `tools/merge.js`. Esta función lee el contenido de una plantilla HTML y reemplaza todos los placeholders con los valores de un objeto JSON correspondiente.
 
-**Ejemplo de función de reemplazo en JavaScript:**
+**Ejemplo de uso en JavaScript:**
 ```javascript
 /**
- * Reemplaza los placeholders en una plantilla HTML con datos de un objeto.
- * También maneja bloques condicionales y bucles simples.
- * @param {string} template El contenido del archivo HTML.
- * @param {object} data El objeto JSON con los datos.
- * @returns {string} El HTML con los datos insertados.
+ * La función se encuentra en /prints/tools/merge.js
+ * y es importada donde se necesite generar un documento.
  */
-function mergeTemplate(template, data) {
-  // Reemplazo de variables simples: {{variable}}
-  let processedHtml = template.replace(/\{\{([^}]+)\}\}/g, (match, key) => {
-    const keys = key.trim().split('.');
-    let value = data;
-    for (const k of keys) {
-      if (value === null || value === undefined) return '';
-      value = value[k];
-    }
-    return value !== null && value !== undefined ? value : '';
-  });
+import { mergeTemplate } from './tools/merge.js';
 
-  // Manejo de bucles simples: {{#each array}} ... {{/each}}
-  processedHtml = processedHtml.replace(/\{\{#each (\w+)\}\}([\s\S]*?)\{\{\/each\}\}/g, (match, arrayName, block) => {
-    const items = data[arrayName] || [];
-    if (!Array.isArray(items)) return '';
-    return items.map(item => {
-        // Para cada item del array, creamos un scope de datos que incluye el item y los datos del padre
-        const scopedData = { ...data, ...item };
-        return mergeTemplate(block, scopedData);
-    }).join('');
-  });
+async function generateDocument() {
+  // 1. Cargar la plantilla y los datos
+  const htmlTemplate = await fetch('prints/templates/ot.html').then(res => res.text());
+  const jsonData = await fetch('prints/samples/ot.sample.json').then(res => res.json());
+  
+  // 2. Fusionar los datos con la plantilla
+  const finalHtml = mergeTemplate(htmlTemplate, jsonData);
 
-  // Manejo de condicionales simples: {{#if variable}} ... {{/if}}
-  processedHtml = processedHtml.replace(/\{\{#if ([\w.]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (match, variable, block) => {
-    const keys = variable.split('.');
-    let value = data;
-    keys.forEach(k => { value = value ? value[k] : undefined; });
-    
-    // Evalúa si el valor es "truthy" (no es false, 0, "", null, undefined) o si es un array con elementos.
-    const isTruthy = Array.isArray(value) ? value.length > 0 : !!value;
-
-    return isTruthy ? block : '';
-  });
-
-  return processedHtml;
+  // 3. Mostrar o imprimir el HTML final
+  // Por ejemplo, abrirlo en una nueva ventana para imprimir:
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(finalHtml);
+  printWindow.document.close();
+  // printWindow.print(); // Opcional: invocar impresión automáticamente
 }
-
-// Uso:
-// const htmlTemplate = await fetch('prints/templates/ot.html').then(res => res.text());
-// const jsonData = await fetch('prints/samples/ot.sample.json').then(res => res.json());
-// const finalHtml = mergeTemplate(htmlTemplate, jsonData);
 ```
 
 ### Renderizado a PDF
@@ -87,17 +59,3 @@ La forma más sencilla de generar un PDF es:
 | **OT**        | `{{ot_code}}`, `{{estado}}`, `{{prioridad}}`, `{{canal}}`, `{{fecha_recepcion}}`, `{{turno_fecha}}`, `{{turno_pos}}`, `{{cliente_*}}`, `{{equipo_*}}`, `{{diagnostico_preliminar}}`, `{{observaciones}}`, `{{accesorios[]}}` (bucle), `{{historial[]}}` (bucle), `{{firma_*}}`, `{{qr_data_uri}}` |
 | **Presupuesto** | `{{numero}}`, `{{fecha}}`, `{{vence_at}}`, `{{estado}}`, `{{cliente_*}}`, `{{diagnostico}}`, `{{observaciones}}`, `{{items[]}}` (bucle), `{{subtotal}}`, `{{impuestos}}`, `{{total}}`, `{{aprobada_*}}`, `{{firma_cliente_img}}`                                                 |
 | **Factura**   | `{{numero}}`, `{{fecha}}`, `{{estado}}`, `{{es_pagada}}` (booleano para watermark), `{{cliente_*}}`, `{{ot_code}}`, `{{items[]}}` (bucle), `{{subtotal}}`, `{{impuestos}}`, `{{total}}`, `{{pagos[]}}` (bucle)                                                                  |
-
----
-
-## Notas Adicionales
-
-### Accesibilidad y Lecturabilidad
--   Los estilos en `print.css` usan una pila de fuentes seguras (`-apple-system`, `Segoe UI`, `Roboto`, etc.) para asegurar una buena renderización en la mayoría de los sistemas operativos.
--   El contraste entre el texto y el fondo se ha mantenido alto para facilitar la lectura, incluso en impresiones de baja calidad.
-
-### Márgenes y Sangrado
--   La directiva `@page` en el CSS define márgenes estándar de 1.5cm para impresión en A4. Esto proporciona un área segura para la mayoría de las impresoras.
-
-### Impresión en Papel Térmico
--   Para impresoras de recibos (ej. 80mm de ancho), se ha incluido una sección `@page` comentada en `print.css`. Para usarla, descoméntala y ajusta el `size` y `margin` según las especificaciones de tu impresora. El diseño fluido del HTML se adaptará razonablemente bien, pero podría requerir ajustes finos en el CSS.
