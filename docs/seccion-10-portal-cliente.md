@@ -17,6 +17,7 @@ La arquitectura de seguridad se basa en dos tablas de unión clave: `cliente_use
 
 ```mermaid
 erDiagram
+    %% --- Entidades Principales del Portal ---
     "auth.users" {
         UUID id PK
     }
@@ -39,17 +40,25 @@ erDiagram
         UUID cliente_id PK,FK
     }
 
-    "auth.users" ||--|{ "empresa_users" : "Pertenece a"
-    "auth.users" ||--|{ "cliente_users" : "Es un"
-    "empresas" ||--|{ "empresa_users" : "Tiene"
-    "clientes" ||--|{ "cliente_users" : "Es representado por"
-    "empresas" ||--o{ "clientes" : "Agrupa a"
+    %% --- Otras Entidades (definidas para mostrar relaciones) ---
+    "ot" { TEXT info "Órdenes de Trabajo" }
+    "presupuestos" { TEXT info "Presupuestos" }
+    "ventas" { TEXT info "Ventas" }
+    "equipos_cliente" { TEXT info "Equipos del Cliente" }
 
-    "empresas" ..o{ "ot" : "Puede ver (vía RLS)"
-    "empresas" ..o{ "presupuestos" : "Puede ver (vía RLS)"
-    "empresas" ..o{ "ventas" : "Puede ver (vía RLS)"
-    "clientes" ..o{ "ot" : "Puede ver (vía RLS)"
-    "clientes" ..o{ "equipos_cliente" : "Puede ver (vía RLS)"
+    %% --- Relaciones Estructurales ---
+    "auth.users"      ||--|{ "empresa_users" : "Pertenece a"
+    "auth.users"      ||--|{ "cliente_users" : "Es un"
+    "empresas"        ||--|{ "empresa_users" : "Tiene"
+    "clientes"        ||--|{ "cliente_users" : "Es representado por"
+    "empresas"        ||--o{ "clientes" : "Agrupa a"
+
+    %% --- Relaciones Conceptuales de Visibilidad (vía RLS) ---
+    "empresas"        ..o{ "ot" : "Puede ver"
+    "empresas"        ..o{ "presupuestos" : "Puede ver"
+    "empresas"        ..o{ "ventas" : "Puede ver"
+    "clientes"        ..o{ "ot" : "Puede ver"
+    "clientes"        ..o{ "equipos_cliente" : "Puede ver"
 
 ```
 
