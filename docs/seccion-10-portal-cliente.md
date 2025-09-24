@@ -17,44 +17,40 @@ La arquitectura de seguridad se basa en dos tablas de unión clave: `cliente_use
 
 ```mermaid
 erDiagram
-    AUTH_USERS {
+    "auth.users" {
         UUID id PK
     }
-    EMPRESAS {
+    "empresas" {
         UUID id PK
         TEXT nombre
     }
-    CLIENTES {
+    "clientes" {
         UUID id PK
         TEXT nombre
         UUID empresa_id FK
     }
-    EMPRESA_USERS {
-        UUID user_id "PK, FK"
-        UUID empresa_id "PK, FK"
+    "empresa_users" {
+        UUID user_id PK,FK
+        UUID empresa_id PK,FK
         TEXT rol
     }
-    CLIENTE_USERS {
-        UUID user_id "PK, FK"
-        UUID cliente_id "PK, FK"
+    "cliente_users" {
+        UUID user_id PK,FK
+        UUID cliente_id PK,FK
     }
 
-    OT { TEXT info "Ordenes de Trabajo" }
-    PRESUPUESTOS { TEXT info "Presupuestos" }
-    VENTAS { TEXT info "Ventas" }
-    EQUIPOS_CLIENTE { TEXT info "Equipos del Cliente" }
+    "auth.users" ||--|{ "empresa_users" : "Pertenece a"
+    "auth.users" ||--|{ "cliente_users" : "Es un"
+    "empresas" ||--|{ "empresa_users" : "Tiene"
+    "clientes" ||--|{ "cliente_users" : "Es representado por"
+    "empresas" ||--o{ "clientes" : "Agrupa a"
 
-    AUTH_USERS      ||--|{ EMPRESA_USERS : "Pertenece a"
-    AUTH_USERS      ||--|{ CLIENTE_USERS : "Es un"
-    EMPRESAS        ||--|{ EMPRESA_USERS : "Tiene"
-    CLIENTES        ||--|{ CLIENTE_USERS : "Es representado por"
-    EMPRESAS        ||--o{ CLIENTES : "Agrupa a"
+    "empresas" ..o{ "ot" : "Puede ver (vía RLS)"
+    "empresas" ..o{ "presupuestos" : "Puede ver (vía RLS)"
+    "empresas" ..o{ "ventas" : "Puede ver (vía RLS)"
+    "clientes" ..o{ "ot" : "Puede ver (vía RLS)"
+    "clientes" ..o{ "equipos_cliente" : "Puede ver (vía RLS)"
 
-    EMPRESAS        ||--o{ OT : "Puede ver"
-    EMPRESAS        ||--o{ PRESUPUESTOS : "Puede ver"
-    EMPRESAS        ||--o{ VENTAS : "Puede ver"
-    CLIENTES        ||--o{ OT : "Puede ver"
-    CLIENTES        ||--o{ EQUIPOS_CLIENTE : "Puede ver"
 ```
 
 ---
