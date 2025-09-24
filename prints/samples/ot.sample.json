@@ -1,0 +1,39 @@
+{
+  "company_logo_url": "https://via.placeholder.com/150x50.png?text=TecniServer",
+  "company_name": "TecniServer Pro S.A.S.",
+  "company_nit": "900.123.456-7",
+  "company_address": "Calle Falsa 123, Oficina 404, Bogotá, Colombia",
+  "company_phone": "+57 300 123 4567",
+  "ot_code": "OT-2024-00157",
+  "estado": "en_proceso",
+  "prioridad": "Urgente",
+  "canal": "Recepción",
+  "fecha_recepcion": "2024-08-01 10:30 AM",
+  "turno_fecha": "2024-08-01",
+  "turno_pos": 3,
+  "cliente_nombre": "Alice Wonderland",
+  "cliente_doc": "CC 12345678",
+  "cliente_email": "alice@example.com",
+  "cliente_phone": "555-1234",
+  "cliente_direccion": "Avenida Siempre Viva 742",
+  "equipo_serial": "SN123HP",
+  "tipo_nombre": "Laptop",
+  "marca_nombre": "HP",
+  "modelo_nombre": "Pavilion 15",
+  "equipo_notas": "Presenta rayones en la tapa superior. Batería al 85% de vida útil.",
+  "diagnostico_preliminar": "El cliente reporta que el equipo no enciende después de un derrame de líquido cerca del teclado.",
+  "observaciones": "El equipo se recibe sin maletín. El cliente indica que la falla es intermitente.",
+  "accesorios": [
+    { "descripcion": "Cargador original HP 65W" },
+    { "descripcion": "Mouse inalámbrico Logitech" }
+  ],
+  "historial": [
+    { "fecha": "2024-08-01 10:30 AM", "evento": "creacion", "detalle": "OT creada en el sistema.", "actor_email": "recepcionista@local" },
+    { "fecha": "2024-08-01 11:00 AM", "evento": "asignacion", "detalle": "Asignado a Carlos Pérez.", "actor_email": "admin@local" },
+    { "fecha": "2024-08-01 02:15 PM", "evento": "estado", "detalle": "Cambio de estado: 'abierta' -> 'en_proceso'.", "actor_email": "tecnico@local" }
+  ],
+  "firma_tecnico_img": "",
+  "firma_cliente_img": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
+  "qr_data_uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAdUlEQVR42u3QMQEAAAwCoNm/9DL4G4Yna2AgQECABAgQIECAAAECBAgQIECAAAECBAgQIECAAAECBAgQIECAAAECBAgQIECAAAECBAgQIECAAAECBAgQIECAAAECBAgQIECAAAECBAgQIECAAAECBAgQIECAALwA52sAAS8sV00AAAAASUVORK5CYII=",
+  "condiciones_generales": "Garantía de 90 días sobre la reparación. No nos hacemos responsables por la información del cliente. Equipos no reclamados después de 90 días se consideran abandonados."
+}

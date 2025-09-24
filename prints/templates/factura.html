@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Factura de Venta - {{numero}}</title>
+  <link rel="stylesheet" href="../styles/print.css">
+</head>
+<body>
+  <div class="sheet" style="position: relative;">
+    {{#if es_pagada}}
+    <div class="watermark">PAGADA</div>
+    {{/if}}
+
+    <header class="header">
+        <div class="company-details-left">
+            <img src="{{company_logo_url}}" alt="Logo de la Empresa" class="logo">
+        </div>
+        <div class="company-details">
+            <strong>{{company_name}}</strong><br>
+            NIT: {{company_nit}}<br>
+            {{company_address}}<br>
+            Tel: {{company_phone}}
+        </div>
+    </header>
+
+    <main>
+      <h1>Factura de Venta</h1>
+      
+      <div class="grid">
+        <div class="grid-item">
+          <h3>Detalles de la Factura</h3>
+          <p><strong>Número:</strong> {{numero}}</p>
+          <p><strong>Estado:</strong> <span class="badge badge-{{estado}}">{{estado}}</span></p>
+          <p><strong>Fecha de Emisión:</strong> {{fecha}}</p>
+          {{#if ot_code}}<p><strong>Orden de Trabajo Relacionada:</strong> {{ot_code}}</p>{{/if}}
+        </div>
+        <div class="grid-item">
+          <h3>Cliente</h3>
+          <p><strong>Nombre:</strong> {{cliente_nombre}}</p>
+          <p><strong>Documento:</strong> {{cliente_doc}}</p>
+          <p><strong>Email:</strong> {{cliente_email}}</p>
+          <p><strong>Teléfono:</strong> {{cliente_phone}}</p>
+        </div>
+      </div>
+
+      <div class="grid-item" style="grid-column: 1 / -1;">
+          <h3>Ítems Facturados</h3>
+          <table class="table">
+              <thead>
+                  <tr>
+                      <th>SKU</th>
+                      <th>Descripción</th>
+                      <th style="text-align: right;">Cantidad</th>
+                      <th style="text-align: right;">P. Unitario</th>
+                      <th style="text-align: right;">IVA %</th>
+                      <th style="text-align: right;">Total Ítem</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {{#each items}}
+                  <tr>
+                      <td>{{sku}}</td>
+                      <td>{{nombre}}</td>
+                      <td style="text-align: right;">{{cantidad}}</td>
+                      <td style="text-align: right;">{{precio_unit}}</td>
+                      <td style="text-align: right;">{{iva_pct}}%</td>
+                      <td style="text-align: right;">{{total_item}}</td>
+                  </tr>
+                  {{/each}}
+              </tbody>
+          </table>
+      </div>
+
+      <div class="grid">
+          <div class="grid-item">
+              {{#if pagos}}
+                  <h3>Pagos Registrados</h3>
+                  <table class="table">
+                      <thead>
+                          <tr>
+                              <th>Método</th>
+                              <th>Referencia</th>
+                              <th style="text-align: right;">Monto</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          {{#each pagos}}
+                          <tr>
+                              <td>{{metodo}}</td>
+                              <td>{{referencia}}</td>
+                              <td style="text-align: right;">{{monto}}</td>
+                          </tr>
+                          {{/each}}
+                      </tbody>
+                  </table>
+              {{/if}}
+          </div>
+          <div class="grid-item">
+              <div class="totals" style="width: 100%;">
+                  <table>
+                      <tbody>
+                          <tr>
+                              <td>Subtotal:</td>
+                              <td style="text-align: right;">{{subtotal}}</td>
+                          </tr>
+                          <tr>
+                              <td>Impuestos:</td>
+                              <td style="text-align: right;">{{impuestos}}</td>
+                          </tr>
+                          <tr class="grand-total">
+                              <td>Total Factura:</td>
+                              <td style="text-align: right;">{{total}}</td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>Gracias por su compra. {{condiciones_generales}}</p>
+    </footer>
+  </div>
+</body>
+</html>

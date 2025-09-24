@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Presupuesto - {{numero}}</title>
+  <link rel="stylesheet" href="../styles/print.css">
+</head>
+<body>
+  <div class="sheet">
+    <header class="header">
+        <div class="company-details-left">
+            <img src="{{company_logo_url}}" alt="Logo de la Empresa" class="logo">
+        </div>
+        <div class="company-details">
+            <strong>{{company_name}}</strong><br>
+            NIT: {{company_nit}}<br>
+            {{company_address}}<br>
+            Tel: {{company_phone}}
+        </div>
+    </header>
+
+    <main>
+      <h1>Presupuesto / Cotización</h1>
+      
+      <div class="grid">
+        <div class="grid-item">
+          <h3>Detalles del Presupuesto</h3>
+          <p><strong>Número:</strong> {{numero}}</p>
+          <p><strong>Estado:</strong> <span class="badge badge-{{estado}}">{{estado}}</span></p>
+          <p><strong>Fecha de Emisión:</strong> {{fecha}}</p>
+          <p><strong>Válido hasta:</strong> {{vence_at}}</p>
+        </div>
+        <div class="grid-item">
+          <h3>Información del Cliente</h3>
+          <p><strong>Nombre:</strong> {{cliente_nombre}}</p>
+          <p><strong>Documento:</strong> {{cliente_doc}}</p>
+          <p><strong>Email:</strong> {{cliente_email}}</p>
+          <p><strong>Teléfono:</strong> {{cliente_phone}}</p>
+        </div>
+      </div>
+
+      <div class="grid-item" style="grid-column: 1 / -1;">
+          <h3>Diagnóstico y Observaciones</h3>
+          <p><strong>Diagnóstico Técnico:</strong> {{diagnostico}}</p>
+          <p><strong>Observaciones Adicionales:</strong> {{observaciones}}</p>
+      </div>
+
+      <div class="grid-item" style="grid-column: 1 / -1;">
+          <h3>Ítems del Presupuesto</h3>
+          <table class="table">
+              <thead>
+                  <tr>
+                      <th>SKU</th>
+                      <th>Descripción</th>
+                      <th style="text-align: right;">Cantidad</th>
+                      <th style="text-align: right;">P. Unitario</th>
+                      <th style="text-align: right;">IVA %</th>
+                      <th style="text-align: right;">Total Ítem</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {{#each items}}
+                  <tr>
+                      <td>{{sku}}</td>
+                      <td>{{nombre}}</td>
+                      <td style="text-align: right;">{{cantidad}}</td>
+                      <td style="text-align: right;">{{precio_unit}}</td>
+                      <td style="text-align: right;">{{iva_pct}}%</td>
+                      <td style="text-align: right;">{{total_item}}</td>
+                  </tr>
+                  {{/each}}
+              </tbody>
+          </table>
+      </div>
+
+      <div class="totals">
+        <table>
+            <tbody>
+                <tr>
+                    <td>Subtotal:</td>
+                    <td style="text-align: right;">{{subtotal}}</td>
+                </tr>
+                <tr>
+                    <td>Impuestos:</td>
+                    <td style="text-align: right;">{{impuestos}}</td>
+                </tr>
+                <tr class="grand-total">
+                    <td>Total a Pagar:</td>
+                    <td style="text-align: right;">{{total}}</td>
+                </tr>
+            </tbody>
+        </table>
+      </div>
+
+      <div class="grid-item" style="grid-column: 1 / -1; margin-top: 2rem;">
+        <h3>Aprobación del Cliente</h3>
+        {{#if aprobada_cliente_at}}
+        <p><strong>Aprobado por el cliente el:</strong> {{aprobada_cliente_at}}</p>
+        <p><strong>Aprobado internamente por:</strong> {{aprobada_por}}</p>
+        {{else}}
+        <div class="signatures">
+            <div class="sign-box">
+              {{#if firma_cliente_img}}
+                <img src="{{firma_cliente_img}}" alt="Firma Cliente">
+              {{/if}}
+              <p><strong>Firma Cliente (Aceptación)</strong></p>
+              <p>Nombre: ____________________</p>
+              <p>Fecha: ____________________</p>
+            </div>
+        </div>
+        {{/if}}
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>Los precios de esta cotización son válidos hasta la fecha de vencimiento. La garantía de los repuestos está sujeta a las políticas del fabricante. {{condiciones_generales}}</p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,45 @@
+{
+  "company_logo_url": "https://via.placeholder.com/150x50.png?text=TecniServer",
+  "company_name": "TecniServer Pro S.A.S.",
+  "company_nit": "900.123.456-7",
+  "company_address": "Calle Falsa 123, Oficina 404, Bogotá, Colombia",
+  "company_phone": "+57 300 123 4567",
+  "numero": "FV-2024-00215",
+  "fecha": "2024-08-05",
+  "estado": "pagada",
+  "es_pagada": true,
+  "ot_code": "OT-2024-00159",
+  "cliente_nombre": "Carlos EmpresaPlus",
+  "cliente_doc": "NIT 11223344-5",
+  "cliente_email": "carlos.plus@example.com",
+  "cliente_phone": "555-1111",
+  "items": [
+    {
+      "sku": "RAM-COR-DDR4-8",
+      "nombre": "Memoria RAM Corsair Vengeance 8GB DDR4",
+      "cantidad": 2,
+      "precio_unit": "180,000.00",
+      "iva_pct": 19,
+      "total_item": "428,400.00"
+    },
+    {
+      "sku": "SERV-INSTALL-HW",
+      "nombre": "Instalación de componentes de hardware",
+      "cantidad": 1,
+      "precio_unit": "40,000.00",
+      "iva_pct": 19,
+      "total_item": "47,600.00"
+    }
+  ],
+  "subtotal": "400,000.00",
+  "impuestos": "76,000.00",
+  "total": "476,000.00",
+  "pagos": [
+    {
+      "metodo": "Tarjeta de Crédito",
+      "monto": "476,000.00",
+      "referencia": "AUTH-98765"
+    }
+  ],
+  "condiciones_generales": "Garantía sujeta a políticas del fabricante."
+}
