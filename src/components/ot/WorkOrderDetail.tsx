@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { WorkOrder, getWorkOrderById } from '../../services/ot';
 import { RequireRole } from '../../services/roles';
-import PrintButton from '../common/PrintButton';
+import { printDocument } from '../../services/print';
 
 interface WorkOrderDetailProps {
   orderId: number;
@@ -213,11 +213,15 @@ export default function WorkOrderDetail({ orderId, onClose }: WorkOrderDetailPro
             </div>
             
             <div style={actionsContainerStyle}>
-              <PrintButton documentType='ot' documentId={String(order.id)} />
-              <RequireRole roles={['admin', 'recepcionista']}>
-                  <button style={posButtonStyle} onClick={handleFacturar}>
-                      Facturar en POS
-                  </button>
+              <RequireRole roles={['admin', 'recepcionista', 'tecnico']}> 
+                <button style={posButtonStyle} onClick={() => printDocument('ot', order)}> 
+                  Imprimir OT 
+                </button> 
+              </RequireRole> 
+              <RequireRole roles={['admin', 'recepcionista']}> 
+                  <button style={posButtonStyle} onClick={handleFacturar}> 
+                      Facturar en POS 
+                  </button> 
               </RequireRole>
             </div>
           </>

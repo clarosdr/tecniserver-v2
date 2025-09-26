@@ -1,6 +1,7 @@
 import React from 'react';
 import { Budget } from '../../services/budgets';
 import { RequireRole } from '../../services/roles';
+import { printDocument } from '../../services/print';
 
 interface BudgetTableProps {
   budgets: Budget[];
@@ -25,6 +26,11 @@ const tdStyle: React.CSSProperties = {
 const buttonStyle: React.CSSProperties = {
   padding: '0.3rem 0.8rem', border: '1px solid #d1d5db', borderRadius: '0.25rem', cursor: 'pointer', 
   backgroundColor: '#22c55e', color: 'white', fontWeight: 500
+};
+
+const printButtonStyle: React.CSSProperties = {
+  padding: '0.3rem 0.8rem', border: '1px solid #d1d5db', borderRadius: '0.25rem', cursor: 'pointer', 
+  backgroundColor: '#3b82f6', color: 'white', fontWeight: 500, marginRight: '0.5rem'
 };
 
 const disabledButtonStyle: React.CSSProperties = {
@@ -82,6 +88,15 @@ export default function BudgetTable({ budgets, onConvert }: BudgetTableProps) {
                 </td>
                 <td style={tdStyle}>{new Date(b.vence_at).toLocaleDateString()}</td>
                 <td style={tdStyle}>
+                  {b.estado === 'aprobado' && (
+                    <button
+                      onClick={() => printDocument('presupuesto', b)}
+                      style={printButtonStyle}
+                      title="Imprimir presupuesto"
+                    >
+                      Imprimir
+                    </button>
+                  )}
                   <RequireRole roles={['admin', 'recepcionista']}>
                     <button
                       onClick={() => onConvert(b.id)}
