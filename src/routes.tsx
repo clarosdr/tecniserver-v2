@@ -14,6 +14,7 @@ import AIProvidersPage from './pages/config/AIProvidersPage';
 import AIPromptsPage from './pages/config/AIPromptsPage';
 import AIRunsPage from './pages/config/AIRunsPage';
 import AIMetricsPage from './pages/config/AIMetricsPage';
+import DevHealthPage from './pages/DevHealthPage';
 
 export function AppRoutes() {
   return (
@@ -33,6 +34,7 @@ export function AppRoutes() {
           <Route path="config/ai/prompts" element={<AIPromptsPage />} />
           <Route path="config/ai/runs" element={<AIRunsPage />} />
           <Route path="config/ai/metrics" element={<AIMetricsPage />} />
+          <Route path="dev/health" element={<DevHealthPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

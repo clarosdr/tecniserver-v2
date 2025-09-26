@@ -1,51 +1,172 @@
-# TecniServer Pro - Taller Management System
+# TecniServer Pro
 
-This is a comprehensive workshop management system built with React, Vite, and TypeScript, styled with Tailwind CSS, and powered by the Google Gemini API.
+Sistema de gestión integral para empresas de servicios técnicos, desarrollado con React, TypeScript y Supabase.
 
-## Running the Project Locally with VS Code
+## 🚀 Configuración Inicial
 
-This project is fully configured to run locally using Visual Studio Code or any other code editor. Follow these steps to get started:
+### Prerrequisitos
 
-### Prerequisites
+- Node.js (versión 18 o superior)
+- npm o yarn
+- Cuenta de Supabase
 
-*   [Node.js](https://nodejs.org/) (version 18 or newer recommended)
-*   A code editor like [Visual Studio Code](https://code.visualstudio.com/)
+### Instalación
 
-### Step-by-Step Instructions
+1. **Clonar el repositorio**
+   ```bash
+   git clone <repository-url>
+   cd tecniserver-v2
+   ```
 
-1.  **Clone or Download the Project:**
-    Get the project files onto your local machine.
+2. **Instalar dependencias**
+   ```bash
+   npm install
+   ```
 
-2.  **Open in VS Code:**
-    Open the project folder in Visual Studio Code.
+3. **Configurar variables de entorno**
+   
+   Copia el archivo `.env.example` a `.env.local`:
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Edita `.env.local` con tus valores:
+   ```env
+   # Supabase Configuration
+   VITE_SUPABASE_URL=tu_supabase_url
+   VITE_SUPABASE_ANON_KEY=tu_supabase_anon_key
+   
+   # Application Configuration
+   VITE_APP_NAME=TecniServer Pro
+   
+   # Print Configuration
+   VITE_PRINT_CSS=/prints/styles/print.css
+   ```
 
-3.  **Install Dependencies:**
-    Open the integrated terminal in VS Code (`Ctrl+ñ` or `View > Terminal`) and run the following command. This will download all the necessary libraries for the project to run.
-    ```bash
-    npm install
-    ```
+## 🛠️ Variables de Entorno
 
-4.  **Set Up Environment Variables (Crucial Step):**
-    The application requires a Google Gemini API key to function.
-    a. In the root of the project, create a new file named `.env.local`.
-    b. You can duplicate the provided `.env.local.example` file and rename it.
-    c. Open `.env.local` and add your API key like this:
-    ```
-    GEMINI_API_KEY="YOUR_GEMINI_API_KEY_HERE"
-    ```
-    Replace `"YOUR_GEMINI_API_KEY_HERE"` with your actual key. This file is ignored by version control for security.
+| Variable | Descripción | Requerida |
+|----------|-------------|-----------|
+| `VITE_SUPABASE_URL` | URL de tu proyecto Supabase | ✅ |
+| `VITE_SUPABASE_ANON_KEY` | Clave anónima de Supabase | ✅ |
+| `VITE_APP_NAME` | Nombre de la aplicación | ✅ |
+| `VITE_PRINT_CSS` | Ruta a los estilos de impresión | ✅ |
 
-5.  **Run the Development Server:**
-    In the terminal, run the following command to start the application:
-    ```bash
-    npm run dev
-    ```
-    Vite will start a local server, typically at `http://localhost:5173`. Open this URL in your web browser to see the application running. Any changes you make to the source code will automatically reload in the browser.
+## 📦 Scripts Disponibles
 
-### Building for Production
+### Desarrollo
+```bash
+npm run dev
+```
+Inicia el servidor de desarrollo en `http://localhost:3000`
 
-When you are ready to deploy the application, run:
+### Construcción
 ```bash
 npm run build
 ```
-This command will create an optimized, production-ready version of your app in a `dist` folder. You can then deploy the contents of this folder to any static hosting service.
+Construye la aplicación para producción en la carpeta `dist/`
+
+### Vista Previa
+```bash
+npm run preview
+```
+Previsualiza la construcción de producción localmente
+
+### Linting (Opcional)
+```bash
+npm run lint
+```
+Ejecuta el linter para verificar la calidad del código
+
+## 🖨️ Sistema de Impresión
+
+### Configuración
+
+El sistema incluye un módulo de impresión avanzado ubicado en la carpeta `/prints/`:
+
+- **Templates**: `/prints/templates/` - Plantillas HTML para diferentes documentos
+- **Estilos**: `/prints/styles/print.css` - Estilos específicos para impresión
+- **Samples**: `/prints/samples/` - Datos de ejemplo para testing
+- **Tools**: `/prints/tools/` - Herramientas auxiliares
+
+### Documentos Soportados
+
+1. **Órdenes de Trabajo (OT)** - `ot.html`
+2. **Facturas** - `factura.html`
+3. **Presupuestos** - `presupuesto.html`
+
+### Uso del Sistema de Impresión
+
+```typescript
+import { printDocument } from './src/services/print';
+
+// Imprimir una orden de trabajo
+await printDocument('ot', otData);
+
+// Imprimir una factura
+await printDocument('factura', facturaData);
+
+// Imprimir un presupuesto
+await printDocument('presupuesto', presupuestoData);
+```
+
+### Personalización de Estilos
+
+Los estilos de impresión se pueden personalizar editando `/prints/styles/print.css`. El archivo incluye:
+
+- Configuración de página y márgenes
+- Estilos específicos para cada tipo de documento
+- Media queries para impresión
+- Configuración de saltos de página
+
+## 🏗️ Estructura del Proyecto
+
+```
+tecniserver-v2/
+├── src/
+│   ├── components/     # Componentes reutilizables
+│   ├── pages/         # Páginas de la aplicación
+│   ├── services/      # Servicios y API calls
+│   └── routes.tsx     # Configuración de rutas
+├── prints/            # Sistema de impresión
+│   ├── templates/     # Plantillas HTML
+│   ├── styles/        # Estilos CSS
+│   ├── samples/       # Datos de ejemplo
+│   └── tools/         # Herramientas auxiliares
+├── docs/              # Documentación
+└── supabase/          # Configuración de base de datos
+```
+
+## 🔧 Desarrollo
+
+### Comandos Útiles
+
+- `npm run dev` - Servidor de desarrollo
+- `npm run build` - Construcción para producción
+- `npm run preview` - Vista previa de producción
+
+### Herramientas de Diagnóstico
+
+- **Health Check**: Accede a `/dev/health` para verificar el estado de todos los servicios
+- **Logs**: Revisa la consola del navegador para errores de desarrollo
+
+## 📚 Documentación Adicional
+
+Consulta la carpeta `/docs/` para documentación específica de cada módulo:
+
+- Configuración de IA
+- Uso de módulos específicos
+- Guías de implementación
+- Ejemplos de uso
+
+## 🤝 Contribución
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
