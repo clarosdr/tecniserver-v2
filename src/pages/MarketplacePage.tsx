@@ -129,7 +129,7 @@ export default function MarketplacePage() {
                     {products.length > 0 ? (
                         <div style={gridStyle}>
                             {products.map(product => (
-                                <ProductCard key={product.id} product={product} />
+                                <ProductCard product={product} />
                             ))}
                         </div>
                     ) : (

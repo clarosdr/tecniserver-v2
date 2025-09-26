@@ -2,11 +2,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Cliente, getClient } from '../services/clients';
-import { CartItem, Payment, PosProduct, searchPosProducts, getWorkOrderForPos, createSale, getActiveCashDrawer, openCashDrawer, CajaApertura } from '../services/pos';
+import { CartItem, Payment, PosProduct, Venta, VentaItem, VentaPago, searchPosProducts, getWorkOrderForPos, createVenta, addItem, addPago, myCajaAbierta, openCaja, cajas, CajaApertura } from '../services/pos';
 import ClientSearch from '../components/clients/ClientSearch';
 import CartItems from '../components/pos/CartItems';
 import PaymentsBox from '../components/pos/PaymentsBox';
 import { RequireRole } from '../services/roles';
+import { printDocument } from '../services/print';
+import { buildInvoicePrintData } from '../services/print-builders';
 
 // Simple debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -26,10 +28,16 @@ export default function PosPage() {
     const [searchParams] = useSearchParams();
     const [caja, setCaja] = useState<CajaApertura | null>(null);
     const [cajaLoading, setCajaLoading] = useState(true);
+    const [availableCajas, setAvailableCajas] = useState<any[]>([]);
 
+    const [currentVenta, setCurrentVenta] = useState<Venta | null>(null);
+    const [ventaItems, setVentaItems] = useState<VentaItem[]>([]);
+    const [ventaPagos, setVentaPagos] = useState<VentaPago[]>([]);
+    
     const [cart, setCart] = useState<CartItem[]>([]);
     const [selectedClient, setSelectedClient] = useState<Cliente | null>(null);
     const [payments, setPayments] = useState<Payment[]>([]);
+    const [lastSaleData, setLastSaleData] = useState<any>(null);
     
     const [productSearch, setProductSearch] = useState('');
     const [searchResults, setSearchResults] = useState<PosProduct[]>([]);
@@ -38,9 +46,20 @@ export default function PosPage() {
 
     const checkCaja = useCallback(async () => {
         setCajaLoading(true);
-        const activeCaja = await getActiveCashDrawer();
-        setCaja(activeCaja);
-        setCajaLoading(false);
+        try {
+            const activeCaja = await myCajaAbierta();
+            setCaja(activeCaja);
+            
+            if (!activeCaja) {
+                // Load available cash registers for opening
+                const cajasList = await cajas();
+                setAvailableCajas(cajasList);
+            }
+        } catch (error) {
+            console.error('Error checking cash register:', error);
+        } finally {
+            setCajaLoading(false);
+        }
     }, []);
 
     useEffect(() => {
@@ -128,7 +147,13 @@ export default function PosPage() {
         setPayments(payments.filter((_, i) => i !== index));
     };
 
-    const handleOpenCaja = async () => {
+    const handleOpenCaja = async (cajaId?: string) => {
+        const selectedCajaId = cajaId || (availableCajas.length > 0 ? availableCajas[0].id : null);
+        if (!selectedCajaId) {
+            alert('No hay cajas disponibles.');
+            return;
+        }
+        
         const amountStr = prompt('Ingrese el monto inicial de apertura de caja:', '0');
         if (amountStr === null) return;
         const amount = parseFloat(amountStr);
@@ -137,7 +162,7 @@ export default function PosPage() {
             return;
         }
         try {
-            const newCaja = await openCashDrawer(amount);
+            const newCaja = await openCaja(selectedCajaId, amount);
             setCaja(newCaja);
         } catch (e: any) {
             alert(`Error: ${e.message}`);
@@ -163,23 +188,56 @@ export default function PosPage() {
             alert('El carrito está vacío.');
             return;
         }
-        if (totalPaid < cartTotal) {
-            alert('El monto pagado es menor al total de la venta.');
-            return;
-        }
 
         setLoading(true);
         try {
             const otId = searchParams.get('ot');
-            const salePayload = {
+            
+            // Create the sale
+            const newVenta = await createVenta({
                 cliente_id: selectedClient.id,
-                items: cart.map(i => ({ product_id: i.product.id, quantity: i.quantity, unit_price: i.unit_price, discount_pct: i.discount_pct })),
-                payments: payments.map(p => ({ method: p.method, amount: p.amount })),
-                ot_id: otId ? parseInt(otId, 10) : null,
+                ot_id: otId ? parseInt(otId, 10) : undefined,
                 caja_apertura_id: caja.id,
-            };
-            const result = await createSale(salePayload);
-            alert(`Venta #${result.venta_id} creada con éxito!`);
+            });
+            
+            setCurrentVenta(newVenta);
+            
+            // Add items to the sale
+            const addedItems: VentaItem[] = [];
+            for (const cartItem of cart) {
+                const ventaItem = await addItem(newVenta.id, {
+                    producto_id: cartItem.product.id,
+                    cantidad: cartItem.quantity,
+                    precio_unit: cartItem.unit_price,
+                    iva_pct: cartItem.product.iva_pct
+                });
+                addedItems.push(ventaItem);
+            }
+            setVentaItems(addedItems);
+            
+            // Add payments to the sale
+            const addedPagos: VentaPago[] = [];
+            for (const payment of payments) {
+                const ventaPago = await addPago(newVenta.id, {
+                    metodo: payment.method as any,
+                    monto: payment.amount
+                });
+                addedPagos.push(ventaPago);
+            }
+            setVentaPagos(addedPagos);
+            
+            // Store sale data for printing (legacy format)
+            setLastSaleData({
+                venta_id: newVenta.id,
+                cliente: selectedClient,
+                items: cart,
+                payments: payments,
+                total: cartTotal,
+                fecha: new Date().toISOString()
+            });
+            
+            alert(`Venta #${newVenta.id} creada con éxito!`);
+            
             // Reset state
             setCart([]);
             setSelectedClient(null);
@@ -260,11 +318,23 @@ export default function PosPage() {
                     <div style={{ marginTop: 'auto' }}>
                         <button
                             onClick={handleFinalizeSale}
-                            disabled={loading || totalPaid < cartTotal || !selectedClient || cart.length === 0}
-                            style={{ width: '100%', padding: '1rem', fontSize: '1.2rem', fontWeight: 'bold', backgroundColor: '#10b981', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                            disabled={loading || !selectedClient || cart.length === 0 || payments.length === 0}
+                            style={{ width: '100%', padding: '1rem', fontSize: '1.2rem', fontWeight: 'bold', backgroundColor: '#10b981', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginBottom: '0.5rem' }}
                         >
                             {loading ? 'Procesando...' : 'Finalizar Venta'}
                         </button>
+                        
+                        {lastSaleData && (
+                            <button
+                                onClick={() => {
+                                    const data = buildInvoicePrintData(lastSaleData);
+                                    printDocument('factura', data);
+                                }}
+                                style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', fontWeight: 'bold', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                            >
+                                Imprimir Factura
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

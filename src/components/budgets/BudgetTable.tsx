@@ -2,6 +2,7 @@ import React from 'react';
 import { Budget } from '../../services/budgets';
 import { RequireRole } from '../../services/roles';
 import { printDocument } from '../../services/print';
+import { buildBudgetPrintData } from '../../services/print-builders';
 
 interface BudgetTableProps {
   budgets: Budget[];
@@ -88,16 +89,37 @@ export default function BudgetTable({ budgets, onConvert }: BudgetTableProps) {
                 </td>
                 <td style={tdStyle}>{new Date(b.vence_at).toLocaleDateString()}</td>
                 <td style={tdStyle}>
-                  {b.estado === 'aprobado' && (
-                    <button
-                      onClick={() => printDocument('presupuesto', b)}
-                      style={printButtonStyle}
-                      title="Imprimir presupuesto"
-                    >
-                      Imprimir
-                    </button>
-                  )}
                   <RequireRole roles={['admin', 'recepcionista']}>
+                    {b.estado === 'aprobado' && (
+                      <button
+                        onClick={() => {
+                          // Convert Budget to PresupuestoRecord format for printing
+                          const presupuestoData = {
+                            id: parseInt(b.id) || 0,
+                            numero_presupuesto: b.numero,
+                            cliente_id: b.cliente_id,
+                            descripcion: `Presupuesto ${b.numero}`,
+                            estado: b.estado,
+                            fecha_creacion: b.created_at,
+                            fecha_vencimiento: b.vence_at,
+                            total: b.total,
+                            cliente: {
+                              full_name: b.cliente_nombre,
+                              fiscal_id: '',
+                              email: '',
+                              phone: ''
+                            },
+                            items: []
+                          };
+                          const data = buildBudgetPrintData(presupuestoData);
+                          printDocument('presupuesto', data);
+                        }}
+                        style={printButtonStyle}
+                        title="Imprimir presupuesto"
+                      >
+                        Imprimir
+                      </button>
+                    )}
                     <button
                       onClick={() => onConvert(b.id)}
                       disabled={b.estado !== 'aprobado'}

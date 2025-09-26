@@ -10,6 +10,10 @@ import BudgetsPage from './pages/BudgetsPage';
 import PortalClientPage from './pages/PortalClientPage';
 import MarketplacePage from './pages/MarketplacePage';
 import SettingsPage from './pages/SettingsPage';
+import AIProvidersPage from './pages/config/AIProvidersPage';
+import AIPromptsPage from './pages/config/AIPromptsPage';
+import AIRunsPage from './pages/config/AIRunsPage';
+import AIMetricsPage from './pages/config/AIMetricsPage';
 
 export function AppRoutes() {
   return (
@@ -25,6 +29,10 @@ export function AppRoutes() {
           <Route path="portal" element={<PortalClientPage />} />
           <Route path="marketplace" element={<MarketplacePage />} />
           <Route path="config" element={<SettingsPage />} />
+          <Route path="config/ai/providers" element={<AIProvidersPage />} />
+          <Route path="config/ai/prompts" element={<AIPromptsPage />} />
+          <Route path="config/ai/runs" element={<AIRunsPage />} />
+          <Route path="config/ai/metrics" element={<AIMetricsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
