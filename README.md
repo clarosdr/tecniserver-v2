@@ -150,14 +150,64 @@ tecniserver-v2/
 - **Health Check**: Accede a `/dev/health` para verificar el estado de todos los servicios
 - **Logs**: Revisa la consola del navegador para errores de desarrollo
 
-## 📚 Documentación Adicional
+## 📚 Documentación Completa
 
-Consulta la carpeta `/docs/` para documentación específica de cada módulo:
+### 🗄️ Base de Datos y SQL
 
-- Configuración de IA
-- Uso de módulos específicos
-- Guías de implementación
-- Ejemplos de uso
+- **[Estructura SQL Completa](docs/estructura-sql-completa.md)** - Mapa completo de archivos SQL y orden de ejecución
+- **[Datos de Demostración](docs/seed-demo.md)** - Guía para cargar y verificar datos de prueba
+
+### 🔐 Sistema de Usuarios y Seguridad
+
+- **[Usuarios y Roles](docs/seccion-02-usuarios-roles.md)** - Sistema base de autenticación
+- **[Políticas RLS](docs/seccion-01-rls-politicas.md)** - Seguridad a nivel de fila
+- **[Permisos Granulares](docs/seccion-01-permisos.md)** - Sistema de permisos detallados
+- **[Pruebas RLS](docs/seccion-02-pruebas-rls.md)** - Verificación de seguridad
+
+### 📋 Módulos de Negocio
+
+- **[Clientes y Equipos](docs/seccion-03-clientes-equipos.md)** - Gestión de clientes y equipos
+- **[Órdenes de Trabajo](docs/seccion-04-ot.md)** - Sistema de OT y diagnósticos
+- **[Mantenimientos](docs/seccion-05-mantenimientos.md)** - Mantenimientos preventivos
+- **[Inventario](docs/seccion-06-inventario.md)** - Control de stock y productos
+- **[Punto de Venta](docs/seccion-07-pos.md)** - Facturación y ventas
+- **[Presupuestos](docs/seccion-08-presupuestos-ot.md)** - Cotizaciones y aprobaciones
+
+### 🌐 Servicios Digitales
+
+- **[Portal del Cliente](docs/seccion-10-portal-cliente.md)** - Acceso web para clientes
+- **[Marketplace](docs/seccion-11-marketplace.md)** - Tienda online de productos
+- **[Fidelización](docs/seccion-12-fidelizacion.md)** - Sistema de puntos y cupones
+
+### 🔧 Servicios Técnicos
+
+- **[Sistema de Impresión](docs/seccion-09-impresion.md)** - Generación de documentos PDF
+- **[Configuración IA](docs/seccion-13-ai-config.md)** - Integración con servicios de IA
+
+### 📱 Interfaces de Usuario
+
+- **[Uso de Clientes UI](docs/clients-ui-usage.md)** - Guía de interfaz de clientes
+- **[Uso de OT UI](docs/ot-ui-usage.md)** - Interfaz de órdenes de trabajo
+- **[Uso de POS UI](docs/pos-ui-usage.md)** - Interfaz de punto de venta
+- **[Uso de Presupuestos UI](docs/budgets-ui-usage.md)** - Interfaz de presupuestos
+- **[Portal UI](docs/portal-ui-usage.md)** - Interfaz del portal del cliente
+- **[Marketplace UI](docs/marketplace-ui.md)** - Interfaz del marketplace
+
+### 🖨️ Sistema de Impresión
+
+- **[Módulo de Impresión](docs/printing-module.md)** - Documentación técnica
+- **[Uso de Impresión OT](docs/print-ot-usage.md)** - Imprimir órdenes de trabajo
+- **[Uso de Impresión Facturas](docs/print-factura-usage.md)** - Imprimir facturas
+- **[Uso de Impresión Presupuestos](docs/print-presupuesto-usage.md)** - Imprimir presupuestos
+- **[Servicio de Impresión](docs/print-service.md)** - API de impresión
+
+### 🔧 Desarrollo y Mantenimiento
+
+- **[Salud del Sistema](docs/dev-health.md)** - Diagnósticos y monitoreo
+- **[Infraestructura UI](docs/infra-ui.md)** - Herramientas de infraestructura
+- **[Roles UI](docs/roles-ui.md)** - Gestión de roles y permisos
+- **[Recordatorios UI](docs/recordatorios-ui.md)** - Sistema de notificaciones
+- **[TODO por Sección](docs/todo-ui-por-seccion.md)** - Tareas pendientes
 
 ## 🤝 Contribución
 
