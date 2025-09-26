@@ -6,7 +6,7 @@ Este documento explica las herramientas creadas para gestionar la visibilidad de
 
 ### 1. Helper `hasRole(roles)`
 
--   **Ubicación:** `src/services/roles.ts`
+-   **Ubicación:** `src/services/roles.tsx`
 -   **Propósito:** Es una función asíncrona que permite verificar programáticamente si el usuario actual tiene un rol específico. Es útil para la lógica condicional dentro de los componentes.
 -   **Uso:**
     ```typescript
@@ -24,7 +24,7 @@ Este documento explica las herramientas creadas para gestionar la visibilidad de
 
 ### 2. Componente `<RequireRole>`
 
--   **Ubicación:** `src/services/roles.ts`
+-   **Ubicación:** `src/services/roles.tsx`
 -   **Propósito:** Es un componente "wrapper" que renderiza sus elementos hijos (`children`) solo si el usuario actual cumple con los roles especificados. Simplifica enormemente la tarea de ocultar o mostrar partes de la UI.
 -   **Uso:**
     ```tsx

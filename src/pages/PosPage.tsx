@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Cliente, getClient } from '../../services/clients';
-import { CartItem, Payment, PosProduct, searchPosProducts, getWorkOrderForPos, createSale, getActiveCashDrawer, openCashDrawer, CajaApertura } from '../../services/pos';
-import ClientSearch from '../../components/clients/ClientSearch';
-import CartItems from '../../components/pos/CartItems';
-import PaymentsBox from '../../components/pos/PaymentsBox';
-import { RequireRole } from '../../services/roles';
+import { Cliente, getClient } from '../services/clients';
+import { CartItem, Payment, PosProduct, searchPosProducts, getWorkOrderForPos, createSale, getActiveCashDrawer, openCashDrawer, CajaApertura } from '../services/pos';
+import ClientSearch from '../components/clients/ClientSearch';
+import CartItems from '../components/pos/CartItems';
+import PaymentsBox from '../components/pos/PaymentsBox';
+import { RequireRole } from '../services/roles';
 
 // Simple debounce hook
 function useDebounce<T>(value: T, delay: number): T {
