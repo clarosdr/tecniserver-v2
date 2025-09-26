@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { WorkOrder, getWorkOrderById } from '../../services/ot';
+import { RequireRole } from '../../services/roles';
+import PrintButton from '../common/PrintButton';
 
 interface WorkOrderDetailProps {
   orderId: number;
@@ -10,6 +13,7 @@ export default function WorkOrderDetail({ orderId, onClose }: WorkOrderDetailPro
   const [order, setOrder] = useState<WorkOrder | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function loadOrderDetails() {
@@ -46,6 +50,12 @@ export default function WorkOrderDetail({ orderId, onClose }: WorkOrderDetailPro
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [onClose]);
+  
+  const handleFacturar = () => {
+    if (order) {
+      navigate(`/pos?ot=${order.id}`);
+    }
+  }
 
   const modalOverlayStyle: React.CSSProperties = {
     position: 'fixed',
@@ -110,6 +120,25 @@ export default function WorkOrderDetail({ orderId, onClose }: WorkOrderDetailPro
     paddingBottom: '0.5rem',
     marginTop: '2rem', 
     marginBottom: '1rem'
+  };
+
+  const actionsContainerStyle: React.CSSProperties = {
+    marginTop: '2rem',
+    paddingTop: '1.5rem',
+    borderTop: '1px solid #e5e7eb',
+    display: 'flex',
+    justifyContent: 'flex-end',
+    gap: '1rem',
+  };
+
+  const posButtonStyle: React.CSSProperties = {
+    padding: '0.5rem 1rem',
+    backgroundColor: '#10b981',
+    color: 'white',
+    border: 'none',
+    borderRadius: '0.25rem',
+    fontWeight: 'bold',
+    cursor: 'pointer',
   };
 
   return (
@@ -183,6 +212,14 @@ export default function WorkOrderDetail({ orderId, onClose }: WorkOrderDetailPro
               <p style={{...valueStyle, whiteSpace: 'pre-wrap', backgroundColor: '#f9fafb', padding: '0.75rem', borderRadius: '0.25rem'}}>{order.technician_notes || 'Aún no hay notas del técnico.'}</p>
             </div>
             
+            <div style={actionsContainerStyle}>
+              <PrintButton documentType='ot' documentId={String(order.id)} />
+              <RequireRole roles={['admin', 'recepcionista']}>
+                  <button style={posButtonStyle} onClick={handleFacturar}>
+                      Facturar en POS
+                  </button>
+              </RequireRole>
+            </div>
           </>
         )}
       </div>

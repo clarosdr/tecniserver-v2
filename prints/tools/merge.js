@@ -82,3 +82,5 @@ function mergeTemplate(template, data) {
 
   return processedHtml;
 }
+
+export { mergeTemplate };
